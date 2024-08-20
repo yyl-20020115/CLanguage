@@ -1,34 +1,30 @@
 ﻿using System;
 using CLanguage.Compiler;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class VisibilityStatement : Statement
 {
-    public class VisibilityStatement : Statement
+    public DeclarationsVisibility Visibility { get; }
+
+    public override bool AlwaysReturns => throw new NotImplementedException ();
+
+    public VisibilityStatement (DeclarationsVisibility visibility) => Visibility = visibility;
+
+    protected override void DoEmit (EmitContext ec)
     {
-        public DeclarationsVisibility Visibility { get; }
-
-        public override bool AlwaysReturns => throw new NotImplementedException ();
-
-        public VisibilityStatement (DeclarationsVisibility visibility)
-        {
-            Visibility = visibility;
-        }
-
-        protected override void DoEmit (EmitContext ec)
-        {
-            // Nothing to do
-        }
-
-        public override void AddDeclarationToBlock (BlockContext context)
-        {
-            // Nothing to do
-        }
+        // Nothing to do
     }
 
-    public enum DeclarationsVisibility
+    public override void AddDeclarationToBlock (BlockContext context)
     {
-        Public,
-        Private,
-        Protected,
+        // Nothing to do
     }
+}
+
+public enum DeclarationsVisibility : int
+{
+    Public,
+    Private,
+    Protected,
 }

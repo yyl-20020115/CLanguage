@@ -1,26 +1,15 @@
-﻿using System;
-using CLanguage.Compiler;
+﻿using CLanguage.Compiler;
 using CLanguage.Types;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class AddressOfExpression : Expression
 {
-    public class AddressOfExpression : Expression
-    {
-        public Expression InnerExpression { get; }
+    public Expression InnerExpression { get; }
 
-        public AddressOfExpression (Expression innerExpression)
-        {
-            InnerExpression = innerExpression;
-        }
+    public AddressOfExpression (Expression innerExpression) => InnerExpression = innerExpression;
 
-        public override CType GetEvaluatedCType (EmitContext ec)
-        {
-            return InnerExpression.GetEvaluatedCType (ec).Pointer;
-        }
+    public override CType GetEvaluatedCType (EmitContext ec) => InnerExpression.GetEvaluatedCType (ec).Pointer;
 
-        protected override void DoEmit (EmitContext ec)
-        {
-            InnerExpression.EmitPointer (ec);
-        }
-    }
+    protected override void DoEmit (EmitContext ec) => InnerExpression.EmitPointer (ec);
 }

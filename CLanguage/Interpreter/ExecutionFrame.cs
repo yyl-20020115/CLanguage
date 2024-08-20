@@ -1,18 +1,10 @@
-﻿
+﻿namespace CLanguage.Interpreter;
 
-namespace CLanguage.Interpreter
+public class ExecutionFrame (BaseFunction function)
 {
-    public class ExecutionFrame
-    {
-        public int FP { get; set; }
-        public int IP { get; set; }
-        public BaseFunction Function { get; set; }
+    public int FP { get; set; }
+    public int IP { get; set; }
+    public BaseFunction Function { get; set; } = function ?? throw new System.ArgumentNullException (nameof (function));
 
-        public ExecutionFrame (BaseFunction function)
-        {
-            Function = function ?? throw new System.ArgumentNullException (nameof (function));
-        }
-
-        public override string ToString () => $"{FP}: {Function.Name}";
-    }
+    public override string ToString () => $"{FP}: {Function.Name}";
 }

@@ -1,54 +1,46 @@
 ﻿using System.Collections.Generic;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public abstract class Initializer
 {
-    public abstract class Initializer
+    public InitializerDesignation? Designation { get; set; }
+}
+
+public class ExpressionInitializer : Initializer
+{
+    public Expression Expression { get; private set; }
+
+    public ExpressionInitializer (Expression expr) => Expression = expr;
+
+    public override string ToString () => Expression.ToString ();
+}
+
+public class StructuredInitializer : Initializer
+{
+    public List<Initializer> Initializers { get; private set; }
+
+    public StructuredInitializer ()
     {
-        public InitializerDesignation? Designation { get; set; }
+        Initializers = [];
     }
 
-    public class ExpressionInitializer : Initializer
+    public void Add (Initializer init)
     {
-        public Expression Expression { get; private set; }
-
-        public ExpressionInitializer (Expression expr)
-        {
-            Expression = expr;
-        }
-
-        public override string ToString ()
-        {
-            return Expression.ToString ();
-        }
+        Initializers.Add (init);
     }
+}
 
-    public class StructuredInitializer : Initializer
+public class InitializerDesignation
+{
+    public List<InitializerDesignator> Designators { get; private set; }
+
+    public InitializerDesignation (List<InitializerDesignator> des)
     {
-        public List<Initializer> Initializers { get; private set; }
-
-        public StructuredInitializer ()
-        {
-            Initializers = new List<Initializer> ();
-        }
-
-        public void Add (Initializer init)
-        {
-            Initializers.Add (init);
-        }
+        Designators = [.. des];
     }
+}
 
-    public class InitializerDesignation
-    {
-        public List<InitializerDesignator> Designators { get; private set; }
-
-        public InitializerDesignation (List<InitializerDesignator> des)
-        {
-            Designators = new List<InitializerDesignator> (des.Count);
-            Designators.AddRange (des);
-        }
-    }
-
-    public class InitializerDesignator
-    {
-    }
+public class InitializerDesignator
+{
 }

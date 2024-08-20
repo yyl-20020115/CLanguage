@@ -1,42 +1,35 @@
-﻿using System;
-using CLanguage.Interpreter;
+﻿using CLanguage.Interpreter;
 using CLanguage.Types;
 using CLanguage.Compiler;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class DereferenceExpression (Expression innerExpression) : Expression
 {
-    public class DereferenceExpression : Expression
+    public Expression InnerExpression { get; } = innerExpression;
+
+    public override CType GetEvaluatedCType (EmitContext ec)
     {
-        public Expression InnerExpression { get; }
-
-        public DereferenceExpression (Expression innerExpression)
-        {
-            InnerExpression = innerExpression;
+        var it = InnerExpression.GetEvaluatedCType (ec);
+        if (it is CPointerType pointerType) {
+            return pointerType.InnerType;
         }
-
-        public override CType GetEvaluatedCType (EmitContext ec)
-        {
-            var it = InnerExpression.GetEvaluatedCType (ec);
-            if (it is CPointerType pointerType) {
-                return pointerType.InnerType;
-            }
-            else {
-                ec.Report.Error (0, $"Cannot dereference values of type `{it}`.");
-                return CBasicType.SignedInt;
-            }
+        else {
+            ec.Report.Error (0, $"Cannot dereference values of type `{it}`.");
+            return CBasicType.SignedInt;
         }
+    }
 
-        protected override void DoEmit (EmitContext ec)
-        {
-            InnerExpression.Emit (ec);
-            ec.Emit (OpCode.LoadPointer);
-        }
+    protected override void DoEmit (EmitContext ec)
+    {
+        InnerExpression.Emit (ec);
+        ec.Emit (OpCode.LoadPointer);
+    }
 
-        public override bool CanEmitPointer => true;
+    public override bool CanEmitPointer => true;
 
-        protected override void DoEmitPointer (EmitContext ec)
-        {
-            InnerExpression.Emit (ec);
-        }
+    protected override void DoEmitPointer (EmitContext ec)
+    {
+        InnerExpression.Emit (ec);
     }
 }

@@ -1,28 +1,26 @@
-﻿using System;
-using CLanguage.Compiler;
+﻿using CLanguage.Compiler;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class ContinueStatement : Statement
 {
-    public class ContinueStatement : Statement
+    public ContinueStatement ()
     {
-        public ContinueStatement ()
-        {
+    }
+
+    public override bool AlwaysReturns => false;
+
+    public override void AddDeclarationToBlock (BlockContext context)
+    {
+    }
+
+    protected override void DoEmit (EmitContext ec)
+    {
+        if (ec.ContinueLabel is not null) {
+            ec.Emit (Interpreter.OpCode.Jump, ec.ContinueLabel);
         }
-
-        public override bool AlwaysReturns => false;
-
-        public override void AddDeclarationToBlock (BlockContext context)
-        {
-        }
-
-        protected override void DoEmit (EmitContext ec)
-        {
-            if (ec.ContinueLabel is object) {
-                ec.Emit (Interpreter.OpCode.Jump, ec.ContinueLabel);
-            }
-            else {
-                ec.Report.Error (139, "No enclosing statement out of which to continue");
-            }
+        else {
+            ec.Report.Error (139, "No enclosing statement out of which to continue");
         }
     }
 }

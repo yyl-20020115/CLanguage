@@ -1,22 +1,13 @@
 ﻿using System;
 using CLanguage.Interpreter;
-using CLanguage.Types;
 
-namespace CLanguage.Compiler
+namespace CLanguage.Compiler;
+
+public class LoopContext (Label breakLabel, Label? continueLabel, EmitContext parentContext) : EmitContext(parentContext)
 {
-    public class LoopContext : EmitContext
-    {
-        public Label LoopBreakLabel { get; }
-        public Label? LoopContinueLabel { get; }
+    public Label LoopBreakLabel { get; } = breakLabel ?? throw new ArgumentNullException (nameof (breakLabel));
+    public Label? LoopContinueLabel { get; } = continueLabel;
 
-        public override Label? BreakLabel => LoopBreakLabel;
-        public override Label? ContinueLabel => LoopContinueLabel ?? ParentContext?.ContinueLabel;
-
-        public LoopContext (Label breakLabel, Label? continueLabel, EmitContext parentContext)
-            : base (parentContext)
-        {
-            LoopBreakLabel = breakLabel ?? throw new ArgumentNullException (nameof (breakLabel));
-            LoopContinueLabel = continueLabel;
-        }
-    }
+    public override Label? BreakLabel => LoopBreakLabel;
+    public override Label? ContinueLabel => LoopContinueLabel ?? ParentContext?.ContinueLabel;
 }

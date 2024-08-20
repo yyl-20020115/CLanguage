@@ -1,31 +1,24 @@
-﻿using System;
+﻿// created by jay 0.7 (c) 1998 Axel.Schreiner@informatik.uni-osnabrueck.de
+
 using CLanguage.Syntax;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CLanguage.Compiler
+namespace CLanguage.Compiler;
+
+public class CompilerOptions (MachineInfo machineInfo, Report report, IEnumerable<Document> documents)
 {
-    public class CompilerOptions
+    public readonly MachineInfo MachineInfo = machineInfo;
+    public readonly Report Report = report;
+    public readonly Document[] Documents = documents.ToArray ();
+
+    public CompilerOptions (MachineInfo machineInfo)
+        : this (machineInfo, new Report (), [])
     {
-        public readonly MachineInfo MachineInfo;
-        public readonly Report Report;
-        public readonly Document[] Documents;
+    }
 
-        public CompilerOptions (MachineInfo machineInfo, Report report, IEnumerable<Document> documents)
-        {
-            MachineInfo = machineInfo;
-            Report = report;
-            Documents = documents.ToArray ();
-        }
-
-        public CompilerOptions (MachineInfo machineInfo)
-            : this (machineInfo, new Report (), Enumerable.Empty<Document> ())
-        {
-        }
-
-        public CompilerOptions ()
-            : this (new MachineInfo ())
-        {
-        }
+    public CompilerOptions ()
+        : this (new MachineInfo ())
+    {
     }
 }

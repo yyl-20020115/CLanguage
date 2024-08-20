@@ -1,28 +1,28 @@
-﻿using System;
-using CLanguage.Compiler;
+﻿using CLanguage.Compiler;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class BreakStatement : Statement
 {
-    public class BreakStatement : Statement
+    public BreakStatement ()
     {
-        public BreakStatement ()
-        {
-        }
+    }
 
-        public override bool AlwaysReturns => false;
+    public override bool AlwaysReturns => false;
 
-        public override void AddDeclarationToBlock (BlockContext context)
-        {
-        }
+    public override void AddDeclarationToBlock (BlockContext context)
+    {
+    }
 
-        protected override void DoEmit (EmitContext ec)
-        {
-            if (ec.BreakLabel is object) {
+    protected override void DoEmit (EmitContext ec)
+    {
+        switch (ec.BreakLabel) {
+            case not null:
                 ec.Emit (Interpreter.OpCode.Jump, ec.BreakLabel);
-            }
-            else {
+                break;
+            default:
                 ec.Report.Error (139, "No enclosing statement out of which to break");
-            }
+                break;
         }
     }
 }

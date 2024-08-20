@@ -1,21 +1,19 @@
-﻿using System;
-using CLanguage.Compiler;
+﻿using CLanguage.Compiler;
 
-namespace CLanguage.Types
+namespace CLanguage.Types;
+
+public class CBoolType : CBasicType
 {
-    public class CBoolType : CBasicType
+    public override bool IsIntegral => true;
+
+    public CBoolType ()
+        : base ("bool", Signedness.Unsigned, "")
     {
-        public override bool IsIntegral => true;
-
-        public CBoolType ()
-            : base ("bool", Signedness.Unsigned, "")
-        {
-        }
-
-        public override int NumValues => 1;
-
-        public override int GetByteSize (EmitContext c) => c.MachineInfo.CharSize;
-
-        public override string ToString () => "bool";
     }
+
+    public override int NumValues => 1;
+
+    public override int GetByteSize (EmitContext c) => c.MachineInfo.CharSize;
+
+    public override string ToString () => "bool";
 }

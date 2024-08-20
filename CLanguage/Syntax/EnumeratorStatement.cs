@@ -1,37 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using CLanguage.Types;
 using CLanguage.Compiler;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class EnumeratorStatement (string left, Expression? right = null) : Statement
 {
-    public class EnumeratorStatement : Statement
+    public string Name { get; } = left ?? throw new ArgumentNullException (nameof (left));
+    public Expression? LiteralValue { get; } = right;
+
+    public override bool AlwaysReturns => false;
+
+    public override string ToString () => $"{Name} = {LiteralValue}";
+
+    protected override void DoEmit (EmitContext ec)
     {
-        public string Name { get; }
-        public Expression? LiteralValue { get; }
+    }
 
-        public override bool AlwaysReturns => false;
-
-        public EnumeratorStatement (string left, Expression? right = null)
-        {
-            Name = left ?? throw new ArgumentNullException (nameof (left));
-            LiteralValue = right;
-        }
-
-        public override string ToString ()
-        {
-            return string.Format ("{0} = {1}", Name, LiteralValue);
-        }
-
-        protected override void DoEmit (EmitContext ec)
-        {
-        }
-
-        public override void AddDeclarationToBlock (BlockContext context)
-        {
-        }
+    public override void AddDeclarationToBlock (BlockContext context)
+    {
     }
 }

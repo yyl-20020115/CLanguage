@@ -1,20 +1,10 @@
 ﻿using System;
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class TypeName (DeclarationSpecifiers specifiers, Declarator? declarator)
 {
-    public class TypeName
-    {
-        public DeclarationSpecifiers Specifiers { get; }
-        public Declarator? Declarator { get; }
+    public DeclarationSpecifiers Specifiers { get; } = specifiers;
+    public Declarator? Declarator { get; } = declarator;
 
-        public TypeName (DeclarationSpecifiers specifiers, Declarator? declarator)
-        {
-            Specifiers = specifiers;
-            Declarator = declarator;
-        }
-
-        public override string ToString ()
-        {
-            return String.Join (", ", Specifiers);
-        }
-    }
+    public override string ToString () => string.Join (", ", Specifiers);
 }

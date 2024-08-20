@@ -2,51 +2,44 @@
 using CLanguage.Compiler;
 using System.Collections.Generic;
 
-namespace CLanguage.Types
+namespace CLanguage.Types;
+
+public class CStructType : CType
 {
-    public class CStructType : CType
-    {
-        public string Name { get; set; }
-        public List<CStructMember> Members { get; set; } = new List<CStructMember> ();
+    public string Name { get; set; }
+    public List<CStructMember> Members { get; set; } = [];
 
-        public CStructType (string name)
-        {
-            Name = name;
-        }
+    public CStructType (string name) => Name = name;
 
-        public override string ToString ()
-        {
-            return string.IsNullOrEmpty(Name) ? "struct" : Name;
-        }
+    public override string ToString () => string.IsNullOrEmpty (Name) ? "struct" : Name;
 
-        public override int NumValues {
-            get {
-                var s = 0;
-                foreach (var m in Members) {
-                    s += m.MemberType.NumValues;
-                }
-                return s;
-            }
-        }
-
-        public override int GetByteSize (EmitContext c)
-        {
+    public override int NumValues {
+        get {
             var s = 0;
             foreach (var m in Members) {
-                s += m.MemberType.GetByteSize (c);
+                s += m.MemberType.NumValues;
             }
             return s;
         }
+    }
 
-        public int GetFieldValueOffset (CStructMember member, EmitContext c)
-        {
-            var offset = 0;
-            foreach (var m in Members) {
-                if (ReferenceEquals (m, member))
-                    return offset;
-                offset += m.MemberType.NumValues;
-            }
-            throw new Exception ($"Member '{member.Name}' not found");
+    public override int GetByteSize (EmitContext c)
+    {
+        var s = 0;
+        foreach (var m in Members) {
+            s += m.MemberType.GetByteSize (c);
         }
+        return s;
+    }
+
+    public int GetFieldValueOffset (CStructMember member, EmitContext c)
+    {
+        var offset = 0;
+        foreach (var m in Members) {
+            if (ReferenceEquals (m, member))
+                return offset;
+            offset += m.MemberType.NumValues;
+        }
+        throw new Exception ($"Member '{member.Name}' not found");
     }
 }

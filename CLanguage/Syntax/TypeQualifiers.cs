@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+[Flags]
+public enum TypeQualifiers : int
 {
-    [Flags]
-    public enum TypeQualifiers
-    {
-        None = 0,
-        Const = 1,
-        Restrict = 2,
-        Volatile = 4,
-    }
+    None = 0,
+    Const = 1,
+    Restrict = 2,
+    Volatile = 4,
 }

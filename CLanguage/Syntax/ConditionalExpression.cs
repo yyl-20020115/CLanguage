@@ -1,45 +1,33 @@
-using System;
 using CLanguage.Types;
 using CLanguage.Interpreter;
 using CLanguage.Compiler;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class ConditionalExpression (Expression condition, Expression trueValue, Expression falseValue) : Expression
 {
-	public class ConditionalExpression : Expression
-	{
-		public Expression Condition { get; set; }
-		public Expression TrueValue { get; set; }
-		public Expression FalseValue { get; set; }
+    public Expression Condition { get; set; } = condition;
+    public Expression TrueValue { get; set; } = trueValue;
+    public Expression FalseValue { get; set; } = falseValue;
 
-		public ConditionalExpression (Expression condition, Expression trueValue, Expression falseValue)
-		{
-			Condition = condition;
-			TrueValue = trueValue;
-			FalseValue = falseValue;
-		}
+    public override CType GetEvaluatedCType (EmitContext ec) => TrueValue.GetEvaluatedCType (ec);
 
-		public override CType GetEvaluatedCType (EmitContext ec)
-		{
-			return TrueValue.GetEvaluatedCType (ec);
-		}
+    protected override void DoEmit (EmitContext ec)
+    {
+        var falseLabel = ec.DefineLabel ();
+        var endLabel = ec.DefineLabel ();
 
-		protected override void DoEmit (EmitContext ec)
-		{
-			var falseLabel = ec.DefineLabel ();
-			var endLabel = ec.DefineLabel ();
+        Condition.Emit (ec);
+        ec.EmitCastToBoolean (Condition.GetEvaluatedCType (ec));
+        ec.Emit (OpCode.BranchIfFalse, falseLabel);
 
-			Condition.Emit (ec);
-			ec.EmitCastToBoolean (Condition.GetEvaluatedCType (ec));
-			ec.Emit (OpCode.BranchIfFalse, falseLabel);
+        TrueValue.Emit (ec);
+        ec.Emit (OpCode.Jump, endLabel);
 
-			TrueValue.Emit (ec);
-			ec.Emit (OpCode.Jump, endLabel);
+        ec.EmitLabel (falseLabel);
+        FalseValue.Emit (ec);
 
-			ec.EmitLabel (falseLabel);
-			FalseValue.Emit (ec);
-
-			ec.EmitLabel (endLabel);
-		}
-	}
+        ec.EmitLabel (endLabel);
+    }
 }
 

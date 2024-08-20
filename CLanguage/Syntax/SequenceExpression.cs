@@ -1,38 +1,24 @@
-using System;
 using CLanguage.Types;
 
 using CLanguage.Interpreter;
 using CLanguage.Compiler;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class SequenceExpression (Expression first, Expression second) : Expression
 {
-	public class SequenceExpression : Expression
-	{
-		public Expression First { get; set; }
-		public Expression Second { get; set; }
+    public Expression First { get; set; } = first;
+    public Expression Second { get; set; } = second;
 
-		public SequenceExpression (Expression first, Expression second)
-		{
-			First = first;
-			Second = second;
-		}
+    public override CType GetEvaluatedCType (EmitContext ec) => Second.GetEvaluatedCType (ec);
 
-		public override CType GetEvaluatedCType (EmitContext ec)
-		{
-			return Second.GetEvaluatedCType (ec);
-		}
+    protected override void DoEmit (EmitContext ec)
+    {
+        First.Emit (ec);
+        ec.Emit (OpCode.Pop);
+        Second.Emit (ec);
+    }
 
-		protected override void DoEmit (EmitContext ec)
-		{
-			First.Emit (ec);
-			ec.Emit (OpCode.Pop);
-			Second.Emit (ec);
-		}
-
-		public override string ToString ()
-		{
-			return "(" + First + ", " + Second + ")";
-		}
-	}
+    public override string ToString () => "(" + First + ", " + Second + ")";
 }
 

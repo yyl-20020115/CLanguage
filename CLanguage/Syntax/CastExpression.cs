@@ -1,31 +1,20 @@
-﻿using System;
-using CLanguage.Compiler;
+﻿using CLanguage.Compiler;
 using CLanguage.Types;
 
-namespace CLanguage.Syntax
+namespace CLanguage.Syntax;
+
+public class CastExpression (TypeName typeName, Expression innerExpression) : Expression
 {
-    public class CastExpression : Expression
+    public TypeName TypeName { get; } = typeName;
+    public Expression InnerExpression { get; } = innerExpression;
+
+    public override CType GetEvaluatedCType (EmitContext ec) => ec.ResolveTypeName (TypeName) ?? CBasicType.SignedInt;
+
+    protected override void DoEmit (EmitContext ec)
     {
-        public TypeName TypeName { get; }
-        public Expression InnerExpression { get; }
-
-        public CastExpression (TypeName typeName, Expression innerExpression)
-        {
-            TypeName = typeName;
-            InnerExpression = innerExpression;
-        }
-
-        public override CType GetEvaluatedCType (EmitContext ec)
-        {
-            return ec.ResolveTypeName (TypeName) ?? CBasicType.SignedInt;
-        }
-
-        protected override void DoEmit (EmitContext ec)
-        {
-            var rtype = GetEvaluatedCType (ec);
-            var itype = InnerExpression.GetEvaluatedCType (ec);
-            InnerExpression.Emit (ec);
-            ec.EmitCast (itype, rtype);
-        }
+        var rtype = GetEvaluatedCType (ec);
+        var itype = InnerExpression.GetEvaluatedCType (ec);
+        InnerExpression.Emit (ec);
+        ec.EmitCast (itype, rtype);
     }
 }

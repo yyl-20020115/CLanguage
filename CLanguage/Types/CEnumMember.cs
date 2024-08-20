@@ -1,22 +1,11 @@
 ﻿using System;
-using CLanguage.Syntax;
 
-namespace CLanguage.Types
+namespace CLanguage.Types;
+
+public class CEnumMember (string name, int value)
 {
-    public class CEnumMember
-    {
-        public string Name { get; }
-        public int Value { get; }
+    public string Name { get; } = name ?? throw new ArgumentNullException (nameof (name));
+    public int Value { get; } = value;
 
-        public CEnumMember (string name, int value)
-        {
-            Name = name ?? throw new ArgumentNullException (nameof (name));
-            Value = value;
-        }
-
-        public override string ToString ()
-        {
-            return $"{Name} = {Value}";
-        }
-    }
+    public override string ToString () => $"{Name} = {Value}";
 }
