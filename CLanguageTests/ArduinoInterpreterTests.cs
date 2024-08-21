@@ -1,66 +1,62 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CLanguage.Syntax;
-using CLanguage.Types;
 using static CLanguage.CLanguageService;
 using CLanguage.Interpreter;
 using CLanguage.Compiler;
 
-namespace CLanguage.Tests
+namespace CLanguage.Tests;
+
+[TestClass]
+public class ArduinoInterpreterTests
 {
-    [TestClass]
-    public class ArduinoInterpreterTests
+    private static ArduinoTestMachineInfo.TestArduino Run (string code)
     {
-        ArduinoTestMachineInfo.TestArduino Run (string code)
+        var machine = new ArduinoTestMachineInfo ();
+        var fullCode = code + "\n\nvoid main() { __cinit(); setup(); while(1){loop();}}";
+        var i = CLanguageService.CreateInterpreter (fullCode, machine, new TestPrinter ());
+        i.Reset ("main");
+        i.Run ();
+        return machine.Arduino;
+    }
+
+    [TestMethod]
+    public void Sizes ()
+    {
+        var printer = new TestPrinter ();
+        var mi = new TestMachineInfo ();
+        var ec = new ExecutableContext (new Executable (mi), new Report (printer));
+
+        Interpreter.CompiledVariable ParseVariable (string code)
         {
-            var machine = new ArduinoTestMachineInfo ();
-            var fullCode = code + "\n\nvoid main() { __cinit(); setup(); while(1){loop();}}";
-            var i = CLanguageService.CreateInterpreter (fullCode, machine, new TestPrinter ());
-            i.Reset ("main");
-            i.Run ();
-            return machine.Arduino;
+            var exe = Compile (code, mi, printer);
+            return exe.Globals.Skip (1).First ();
         }
 
-        [TestMethod]
-        public void Sizes ()
-        {
-            var printer = new TestPrinter ();
-            var mi = new TestMachineInfo ();
-            var ec = new ExecutableContext (new Executable (mi), new Report (printer));
+        var charV = ParseVariable ("char v;");
+        Assert.AreEqual (1, charV.VariableType.GetByteSize (ec));
 
-            Interpreter.CompiledVariable ParseVariable (string code)
-            {
-                var exe = Compile (code, mi, printer);
-                return exe.Globals.Skip (1).First ();
-            }
+        var intV = ParseVariable ("int v;");
+        Assert.AreEqual (2, intV.VariableType.GetByteSize (ec));
 
-            var charV = ParseVariable ("char v;");
-            Assert.AreEqual (1, charV.VariableType.GetByteSize (ec));
+        var shortIntV = ParseVariable ("short int v;");
+        Assert.AreEqual (2, shortIntV.VariableType.GetByteSize (ec));
 
-            var intV = ParseVariable ("int v;");
-            Assert.AreEqual (2, intV.VariableType.GetByteSize (ec));
+        var unsignedLongV = ParseVariable ("unsigned long v;");
+        Assert.AreEqual (4, unsignedLongV.VariableType.GetByteSize (ec));
 
-            var shortIntV = ParseVariable ("short int v;");
-            Assert.AreEqual (2, shortIntV.VariableType.GetByteSize (ec));
+        var unsignedLongLongV = ParseVariable ("unsigned long long v;");
+        Assert.AreEqual (8, unsignedLongLongV.VariableType.GetByteSize (ec));
 
-            var unsignedLongV = ParseVariable ("unsigned long v;");
-            Assert.AreEqual (4, unsignedLongV.VariableType.GetByteSize (ec));
+        var intPV = ParseVariable ("int *v;");
+        Assert.AreEqual (2, intPV.VariableType.GetByteSize (ec));
 
-            var unsignedLongLongV = ParseVariable ("unsigned long long v;");
-            Assert.AreEqual (8, unsignedLongLongV.VariableType.GetByteSize (ec));
+        var longPV = ParseVariable ("long *v;");
+        Assert.AreEqual (2, longPV.VariableType.GetByteSize (ec));
+    }
 
-            var intPV = ParseVariable ("int *v;");
-            Assert.AreEqual (2, intPV.VariableType.GetByteSize (ec));
-
-            var longPV = ParseVariable ("long *v;");
-            Assert.AreEqual (2, longPV.VariableType.GetByteSize (ec));
-        }
-
-        public const string BlinkCode = @"
+    public const string BlinkCode = @"
 void setup() {                
   // initialize the digital pin as an output.
   // Pin 13 has an LED connected on most Arduino boards:
@@ -75,18 +71,18 @@ void loop() {
 }
 ";
 
-        [TestMethod]
-        public void Blink ()
-        {
-            var arduino = Run (BlinkCode);
+    [TestMethod]
+    public void Blink ()
+    {
+        var arduino = Run (BlinkCode);
 
-            Assert.AreEqual (1, arduino.Pins[13].Mode);
-        }
+        Assert.AreEqual (1, arduino.Pins[13].Mode);
+    }
 
-        [TestMethod]
-        public void InternalLocalCtorTest ()
-        {
-            var code = @"
+    [TestMethod]
+    public void InternalLocalCtorTest ()
+    {
+        var code = @"
 void setup() {
   Serial.begin(9600);
 }
@@ -96,14 +92,14 @@ void loop() {
   Serial.println(ctor.x);
   delay(1);
 }";
-            var arduino = Run (code);
-            Assert.AreEqual ("1234", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
-        }
+        var arduino = Run (code);
+        Assert.AreEqual ("1234", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
+    }
 
-        [TestMethod]
-        public void InternalGlobalCtorTest ()
-        {
-            var code = @"
+    [TestMethod]
+    public void InternalGlobalCtorTest ()
+    {
+        var code = @"
 void setup() {
   Serial.begin(9600);
 }
@@ -112,14 +108,14 @@ void loop() {
   Serial.println(ctor.x);
   delay(1);
 }";
-            var arduino = Run (code);
-            Assert.AreEqual ("5678", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
-        }
+        var arduino = Run (code);
+        Assert.AreEqual ("5678", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
+    }
 
-        [TestMethod]
-        public void CallbackVoidIntIntTest ()
-        {
-            var code = @"
+    [TestMethod]
+    public void CallbackVoidIntIntTest ()
+    {
+        var code = @"
 int result = 0;
 void callback(int x, int y) {
   result = x*1000 + y;
@@ -130,14 +126,14 @@ void setup() {
 void loop() {
   Serial.println(result);
 }";
-            var arduino = Run (code);
-            Assert.AreEqual ("2003", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
-        }
+        var arduino = Run (code);
+        Assert.AreEqual ("2003", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
+    }
 
-        [TestMethod]
-        public void CallbackIntIntIntTest ()
-        {
-            var code = @"
+    [TestMethod]
+    public void CallbackIntIntIntTest ()
+    {
+        var code = @"
 int result = 0;
 int callback(int x, int y) {
   return x*100 + y;
@@ -148,14 +144,14 @@ void setup() {
 void loop() {
   Serial.println(result);
 }";
-            var arduino = Run (code);
-            Assert.AreEqual ("203", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
-        }
+        var arduino = Run (code);
+        Assert.AreEqual ("203", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
+    }
 
-        [TestMethod]
-        public void CallbackMemberVoidIntTest ()
-        {
-            var code = @"
+    [TestMethod]
+    public void CallbackMemberVoidIntTest ()
+    {
+        var code = @"
 int result = 0;
 void setup() {
   Wire.onReceive(receiveEvent);
@@ -166,14 +162,14 @@ void receiveEvent(int x) {
 void loop() {
   Serial.println(result);
 }";
-            var arduino = Run (code);
-            Assert.AreEqual ("22000", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
-        }
+        var arduino = Run (code);
+        Assert.AreEqual ("22000", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
+    }
 
-        [TestMethod]
-        public void AnalogReadSerial ()
-        {
-            var code = @"
+    [TestMethod]
+    public void AnalogReadSerial ()
+    {
+        var code = @"
 void setup() {
   Serial.begin(9600);
 }
@@ -183,14 +179,14 @@ void loop() {
   Serial.println(sensorValue);
   delay(1);
 }";
-            var arduino = Run (code);
-            Assert.AreEqual ("42", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
-        }
+        var arduino = Run (code);
+        Assert.AreEqual ("42", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
+    }
 
-        [TestMethod]
-        public void DigitalReadSerial ()
-        {
-            var code = @"
+    [TestMethod]
+    public void DigitalReadSerial ()
+    {
+        var code = @"
 void setup() {
   Serial.begin(9600);
   pinMode(2, INPUT);
@@ -201,14 +197,14 @@ void loop() {
   Serial.println(sensorValue, DEC);
 }
 ";
-            var arduino = Run (code);
-            Assert.AreEqual ("0", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
-        }
+        var arduino = Run (code);
+        Assert.AreEqual ("0", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
+    }
 
-        [TestMethod]
-        public void DigitalRead ()
-        {
-            var code = @"
+    [TestMethod]
+    public void DigitalRead ()
+    {
+        var code = @"
 void setup() {
   pinMode(2, INPUT);
   pinMode(3, OUTPUT);
@@ -219,12 +215,12 @@ void loop() {
   digitalWrite(3, sensorValue);
 }
 ";
-            var arduino = Run (code);
-            Assert.AreEqual (0, arduino.Pins[2].Mode);
-            Assert.AreEqual (1, arduino.Pins[3].Mode);
-        }
+        var arduino = Run (code);
+        Assert.AreEqual (0, arduino.Pins[2].Mode);
+        Assert.AreEqual (1, arduino.Pins[3].Mode);
+    }
 
-        public const string FadeCode = @"
+    public const string FadeCode = @"
 int brightness = 0;    // how bright the LED is
 int fadeAmount = 5;    // how many points to fade the LED by
 
@@ -249,16 +245,16 @@ void loop()  {
 }
 ";
 
-        [TestMethod]
-        public void Fade ()
-        {
-            var arduino = Run (FadeCode);
-        }
+    [TestMethod]
+    public void Fade ()
+    {
+        var arduino = Run (FadeCode);
+    }
 
-        [TestMethod]
-        public void Tone ()
-        {
-            var code = @"
+    [TestMethod]
+    public void Tone ()
+    {
+        var code = @"
 int melody[] = {
   NOTE_C4, NOTE_G3,NOTE_G3, NOTE_A3, NOTE_G3,0, NOTE_B3, NOTE_C4};
 
@@ -289,13 +285,13 @@ void loop() {
   // no need to repeat the melody.
 }
 ";
-            var arduino = Run (code);
-        }
+        var arduino = Run (code);
+    }
 
-        [TestMethod]
-        public void Calibration ()
-        {
-            var code = @"
+    [TestMethod]
+    public void Calibration ()
+    {
+        var code = @"
 // These constants won't change:
 const int sensorPin = A0;    // pin that the sensor is attached to
 const int ledPin = 9;        // pin that the LED is attached to
@@ -344,13 +340,13 @@ void loop() {
   analogWrite(ledPin, sensorValue);
 }
 ";
-            var arduino = Run (code);
-        }
+        var arduino = Run (code);
+    }
 
-        [TestMethod]
-        public void StateChangeDetection ()
-        {
-            var code = @"
+    [TestMethod]
+    public void StateChangeDetection ()
+    {
+        var code = @"
 
 // this constant won't change:
 const int  buttonPin = 2;    // the pin that the pushbutton is attached to
@@ -406,14 +402,14 @@ lastButtonState = buttonState;
    }
 
 }";
-            var arduino = Run (code);
-            Assert.AreEqual ("start", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
-        }
+        var arduino = Run (code);
+        Assert.AreEqual ("start", arduino.SerialOut.ToString ().Split ("\n").First ().Trim ());
+    }
 
-        [TestMethod]
-        public void UserBug0 ()
-        {
-            var code = @"
+    [TestMethod]
+    public void UserBug0 ()
+    {
+        var code = @"
 
 /* 
 7 Segment LED Display Pin Connects to Arduino Digital Terminal ... 
@@ -557,8 +553,7 @@ volt += analogRead(pin);
 volt = volt / i; 
 return volt * (Vcc / 1023); 
 }";
-            var arduino = Run (code);
-            Assert.IsTrue (arduino.SerialOut.ToString ().TrimStart ().StartsWith ("setup:", StringComparison.Ordinal));
-        }
+        var arduino = Run (code);
+        Assert.IsTrue (arduino.SerialOut.ToString ().TrimStart ().StartsWith ("setup:", StringComparison.Ordinal));
     }
 }

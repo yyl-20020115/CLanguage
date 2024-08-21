@@ -1,15 +1,14 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CLanguage.Tests
+namespace CLanguage.Tests;
+
+[TestClass]
+public class WhileTests : TestsBase
 {
-    [TestClass]
-    public class WhileTests : TestsBase
+    [TestMethod]
+    public void InnerForLoop ()
     {
-        [TestMethod]
-        public void InnerForLoop ()
-        {
-            Run (@"
+        Run (@"
 void main()
 {
 	int s = 0;
@@ -26,6 +25,5 @@ void main()
     assertAreEqual(6, a);
 }
 ");
-        }
     }
 }

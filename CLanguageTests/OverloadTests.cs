@@ -1,26 +1,24 @@
-﻿using System;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CLanguage.Interpreter;
 
-namespace CLanguage.Tests
-{
-    [TestClass]
-    public class OverloadTests
-    {
-        static CInterpreter Run (string code)
-        {
-            var fullCode = "void start() { __cinit(); main(); } " + code;
-            var i = CLanguageService.CreateInterpreter (fullCode, new ArduinoTestMachineInfo (), printer: new TestPrinter ());
-            i.Reset ("start");
-            i.Run ();
-            return i;
-        }
+namespace CLanguage.Tests;
 
-        [TestMethod]
-        public void GlobalScoring ()
-        {
-            var i = Run (@"
+[TestClass]
+public class OverloadTests
+{
+    static CInterpreter Run (string code)
+    {
+        var fullCode = "void start() { __cinit(); main(); } " + code;
+        var i = CLanguageService.CreateInterpreter (fullCode, new ArduinoTestMachineInfo (), printer: new TestPrinter ());
+        i.Reset ("start");
+        i.Run ();
+        return i;
+    }
+
+    [TestMethod]
+    public void GlobalScoring ()
+    {
+        var i = Run (@"
 int f(char x) { return 1; }
 int f(int x) { return 2; }
 int f(float x) { return 3; }
@@ -38,12 +36,12 @@ void main () {
     assertAreEqual (6, f(msg));
     assertAreEqual (1, f('h'));
 }");
-        }
+    }
 
-        [TestMethod]
-        public void MemberScoring ()
-        {
-            var i = Run (@"
+    [TestMethod]
+    public void MemberScoring ()
+    {
+        var i = Run (@"
 void main () {
     char msg[5];
     assertAreEqual (0, test.f());
@@ -55,12 +53,12 @@ void main () {
     assertAreEqual (6, test.f(""hello""));
     assertAreEqual (6, test.f(msg));
 }");
-        }
+    }
 
-        [TestMethod]
-        public void DefaultValue ()
-        {
-            var i = Run (@"
+    [TestMethod]
+    public void DefaultValue ()
+    {
+        var i = Run (@"
 int f(int x, int y = 1000) { return x + y; }
 double f(double x, double y = 3.14) { return (x + y); }
 void main () {
@@ -73,12 +71,12 @@ void main () {
     assertDoublesAreEqual (2, f(0.0, 2));
     assertDoublesAreEqual (1, f(-1.0, 2));
 }");
-        }
+    }
 
-        [TestMethod]
-        public void GlobalCharVsIntVariable ()
-        {
-            var i = Run (@"
+    [TestMethod]
+    public void GlobalCharVsIntVariable ()
+    {
+        var i = Run (@"
 int f(char x) { return 1; }
 int f(int x) { return 2; }
 void main () {
@@ -87,36 +85,36 @@ void main () {
     assertAreEqual (1, f(cval));
     assertAreEqual (2, f(ival));
 }");
-        }
+    }
 
-        [TestMethod]
-        public void MemberCharVsIntVariable ()
-        {
-            var i = Run (@"
+    [TestMethod]
+    public void MemberCharVsIntVariable ()
+    {
+        var i = Run (@"
 void main () {
     char cval = 'F';
     int ival = 42;
     assertAreEqual (1, test.f(cval));
     assertAreEqual (2, test.f(ival));
 }");
-        }
+    }
 
-        [TestMethod]
-        public void VoidPtrFromArray ()
-        {
-            var i = Run (@"
+    [TestMethod]
+    public void VoidPtrFromArray ()
+    {
+        var i = Run (@"
 int f(void *x) { return 1; }
 int xs[5] = { 10, 20, 30, 40, 50 };
 void main () {
     int fr = f(xs);
     assertAreEqual (1, fr);
 }");
-        }
+    }
 
-        [TestMethod]
-        public void VoidPtrFromOtherPtr ()
-        {
-            var i = Run (@"
+    [TestMethod]
+    public void VoidPtrFromOtherPtr ()
+    {
+        var i = Run (@"
 int f(void *x) { return 1; }
 int xs[5] = { 10, 20, 30, 40, 50 };
 void main () {
@@ -124,6 +122,5 @@ void main () {
     int fr = f(p);
     assertAreEqual (1, fr);
 }");
-        }
     }
 }

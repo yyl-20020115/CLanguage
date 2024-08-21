@@ -1,19 +1,14 @@
-﻿using System;
-using System.Linq;
-using CLanguage.Interpreter;
-using CLanguage.Syntax;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static CLanguage.CLanguageService;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CLanguage.Tests
+namespace CLanguage.Tests;
+
+[TestClass]
+public class EnumTests : TestsBase
 {
-    [TestClass]
-    public class EnumTests : TestsBase
+    [TestMethod]
+    public void NamedUnnumbered ()
     {
-        [TestMethod]
-        public void NamedUnnumbered ()
-        {
-            Run (@"
+        Run (@"
 enum Numbers { ZERO, ONE, TWO };
 void main() {
     assertAreEqual(0, ZERO);
@@ -21,12 +16,12 @@ void main() {
     assertAreEqual(2, TWO);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void NamedNumbered ()
-        {
-            Run (@"
+    [TestMethod]
+    public void NamedNumbered ()
+    {
+        Run (@"
 enum Numbers { ONE = 1, ZERO = 0, H = 100, X, Y = 1000, Z };
 void main() {
     assertAreEqual(1, ONE);
@@ -37,12 +32,12 @@ void main() {
     assertAreEqual(1001, Z);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void UnnamedNumbered ()
-        {
-            Run (@"
+    [TestMethod]
+    public void UnnamedNumbered ()
+    {
+        Run (@"
 enum { ONE = 1, ZERO = 0, H = 100, X, Y = -1000, Z, V25 = 2 * 10 + 5 };
 void main() {
     assertAreEqual(1, ONE);
@@ -54,12 +49,12 @@ void main() {
     assertAreEqual(25, V25);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void UnnamedRecursive ()
-        {
-            Run (@"
+    [TestMethod]
+    public void UnnamedRecursive ()
+    {
+        Run (@"
 enum { ZERO, ONE, OTHER_ONE = ONE, THREE = 2 + OTHER_ONE };
 void main() {
     assertAreEqual(1, ONE);
@@ -67,21 +62,20 @@ void main() {
     assertAreEqual(3, THREE);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void GlobalInit ()
-        {
-            Run (@"
+    [TestMethod]
+    public void GlobalInit ()
+    {
+        Run (@"
 enum Numbers { ZERO, ONE };
 enum Numbers one = ONE;
 void main() {
     assertAreEqual(1, one);
 }
 ");
-        }
-
-
     }
+
+
 }
 

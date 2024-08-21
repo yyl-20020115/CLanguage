@@ -1,15 +1,14 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CLanguage.Tests
+namespace CLanguage.Tests;
+
+[TestClass]
+public class SwitchTests : TestsBase
 {
-    [TestClass]
-    public class SwitchTests : TestsBase
+    [TestMethod]
+    public void EmptySwitch ()
     {
-        [TestMethod]
-        public void EmptySwitch ()
-        {
-            Run (@"
+        Run (@"
 void main()
 {
     int x = 6;
@@ -19,12 +18,12 @@ void main()
     assertAreEqual(6, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void OnlyDefault ()
-        {
-            Run (@"
+    [TestMethod]
+    public void OnlyDefault ()
+    {
+        Run (@"
 void main()
 {
     int x = 6;
@@ -36,12 +35,12 @@ void main()
     assertAreEqual(1000, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void OnlyDefaultBreak ()
-        {
-            Run (@"
+    [TestMethod]
+    public void OnlyDefaultBreak ()
+    {
+        Run (@"
 void main()
 {
     int x = 6;
@@ -54,12 +53,12 @@ void main()
     assertAreEqual(6, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void HitOnly ()
-        {
-            Run (@"
+    [TestMethod]
+    public void HitOnly ()
+    {
+        Run (@"
 void main()
 {
     int x = 6;
@@ -77,12 +76,12 @@ void main()
     assertAreEqual(600, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void HitDefault ()
-        {
-            Run (@"
+    [TestMethod]
+    public void HitDefault ()
+    {
+        Run (@"
 void main()
 {
     int x = 5;
@@ -101,12 +100,12 @@ void main()
     assertAreEqual(1000, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void NoDefault ()
-        {
-            Run (@"
+    [TestMethod]
+    public void NoDefault ()
+    {
+        Run (@"
 void main()
 {
     int x = 6;
@@ -122,12 +121,12 @@ void main()
     assertAreEqual(6, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void Fallthrough ()
-        {
-            Run (@"
+    [TestMethod]
+    public void Fallthrough ()
+    {
+        Run (@"
 void main()
 {
     int x = 5;
@@ -144,7 +143,6 @@ void main()
     }
     assertAreEqual(600, x);
 }");
-        }
     }
 }
 

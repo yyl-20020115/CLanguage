@@ -1,19 +1,14 @@
-﻿using System;
-using System.Linq;
-using CLanguage.Interpreter;
-using CLanguage.Syntax;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static CLanguage.CLanguageService;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CLanguage.Tests
+namespace CLanguage.Tests;
+
+[TestClass]
+public class AssignTests : TestsBase
 {
-    [TestClass]
-    public class AssignTests : TestsBase
+    [TestMethod]
+    public void GlobalAssignBits ()
     {
-        [TestMethod]
-        public void GlobalAssignBits ()
-        {
-            Run (@"
+        Run (@"
 int x = 0;
 void main() {
     x |= 0xCC;
@@ -22,12 +17,12 @@ void main() {
     assertAreEqual(63, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void GlobalAssignDoubles ()
-        {
-            Run (@"
+    [TestMethod]
+    public void GlobalAssignDoubles ()
+    {
+        Run (@"
 double x = 0.0;
 void main() {
     x += 100;
@@ -37,12 +32,12 @@ void main() {
     assertDoublesAreEqual(5000000.0, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void GlobalAssignLogic ()
-        {
-            Run (@"
+    [TestMethod]
+    public void GlobalAssignLogic ()
+    {
+        Run (@"
 bool x = false;
 void main() {
     x ||= true;
@@ -50,24 +45,24 @@ void main() {
     assertBoolsAreEqual(true, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void GlobalAssign ()
-        {
-            Run (@"
+    [TestMethod]
+    public void GlobalAssign ()
+    {
+        Run (@"
 int x = 0;
 void main() {
     x = 1234;
     assertAreEqual(1234, x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void GlobalAfterArray ()
-        {
-            Run (@"
+    [TestMethod]
+    public void GlobalAfterArray ()
+    {
+        Run (@"
 int a[] = {111, 222};
 int x = 0;
 void main() {
@@ -79,7 +74,6 @@ void main() {
     assertAreEqual(10, i);
 }
 ");
-        }
     }
 }
 

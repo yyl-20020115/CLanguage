@@ -3,54 +3,54 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CLanguage.Interpreter;
 
-namespace CLanguage.Tests
+namespace CLanguage.Tests;
+
+[TestClass]
+public class InterpreterTests : TestsBase
 {
-	[TestClass]
-	public class InterpreterTests : TestsBase
-	{
-		[TestMethod]
-		public void YieldingDelay ()
-		{
-			var mi = new TestMachineInfo ();
-			bool[] hit = new bool[3];
-			mi.AddInternalFunction ("int yieldingDelay(int ms)", i => {
-				var ms = i.ReadArg (0).Int16Value;
-				Console.WriteLine ($"RUN Y={i.YieldedValue}");
-				hit[i.YieldedValue] = true;
-				if (i.YieldedValue == 0) {
-					i.Yield (1);
-				}
-				else if (i.YieldedValue == 1) {
-					i.Yield (2);
-				}
-				else {
-					i.Yield (0);
-					i.Push (ms * 1000);
-				}
-			});
-			var it = Run (@"
+    [TestMethod]
+    public void YieldingDelay ()
+    {
+        var mi = new TestMachineInfo ();
+        bool[] hit = new bool[3];
+        mi.AddInternalFunction ("int yieldingDelay(int ms)", i => {
+            var ms = i.ReadArg (0).Int16Value;
+            Console.WriteLine ($"RUN Y={i.YieldedValue}");
+            hit[i.YieldedValue] = true;
+            if (i.YieldedValue == 0) {
+                i.Yield (1);
+            }
+            else if (i.YieldedValue == 1) {
+                i.Yield (2);
+            }
+            else {
+                i.Yield (0);
+                i.Push (ms * 1000);
+            }
+        });
+        var it = Run (@"
 void main () {
     auto x = yieldingDelay(3);
     assertAreEqual (3000, x);
 }", mi);
-			Assert.IsTrue (hit[0]);
-			Assert.IsFalse (hit[1]);
-			Assert.IsFalse (hit[2]);
-			it.Step ();
-			Assert.IsTrue (hit[0]);
-			Assert.IsTrue (hit[1]);
-			Assert.IsFalse (hit[2]);
-			it.Step ();
-			Assert.IsTrue (hit[0]);
-			Assert.IsTrue (hit[1]);
-			Assert.IsTrue (hit[2]);
-		}
+        Assert.IsTrue (hit[0]);
+        Assert.IsFalse (hit[1]);
+        Assert.IsFalse (hit[2]);
+        it.Step ();
+        Assert.IsTrue (hit[0]);
+        Assert.IsTrue (hit[1]);
+        Assert.IsFalse (hit[2]);
+        it.Step ();
+        Assert.IsTrue (hit[0]);
+        Assert.IsTrue (hit[1]);
+        Assert.IsTrue (hit[2]);
+    }
 
-		[TestMethod]
-		public void InfiniteRecursionThrows ()
-		{
-			try {
-				var i = Run (@"
+    [TestMethod]
+    public void InfiniteRecursionThrows ()
+    {
+        try {
+            var i = Run (@"
 int f (int n) {
 	return f (n);
 }
@@ -58,29 +58,29 @@ void main () {
 	f (1);
 }");
 
-				Assert.Fail ("Expected ExecutionException but got nothing");
-			}
-			catch (ExecutionException) {
-			}
-			catch (Exception) {
-				throw;
-			}
-		}
+            Assert.Fail ("Expected ExecutionException but got nothing");
+        }
+        catch (ExecutionException) {
+        }
+        catch (Exception) {
+            throw;
+        }
+    }
 
-		[TestMethod]
-		public void InfiniteLoopStopsEventually ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void InfiniteLoopStopsEventually ()
+    {
+        var i = Run (@"
 void main () {
 	while (true) {
 	}
 }");
-		}
+    }
 
-		[TestMethod]
-		public void MutualRecursive ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void MutualRecursive ()
+    {
+        var i = Run (@"
 int m (int);
 
 int f (int n) {
@@ -108,12 +108,12 @@ void main () {
 	assertAreEqual (4, m (6));
 	assertAreEqual (4, m (7));
 }");
-		}
+    }
 
-		[TestMethod]
-		public void Recursive ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void Recursive ()
+    {
+        var i = Run (@"
 unsigned long fib (unsigned long n) {
 	if (n == 0 || n == 1) {
 		return n;
@@ -132,12 +132,12 @@ void main () {
 	assertAreEqual (8, fib (6));
 	assertAreEqual (13, fib (7));
 }");
-		}
+    }
 
-		[TestMethod]
-		public void OverwriteArgs ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void OverwriteArgs ()
+    {
+        var i = Run (@"
 int abs (int x) {
 	if (x < 0) x = -x;
 	return x;
@@ -147,12 +147,12 @@ void main () {
 	assertAreEqual (101, abs(-101));
 	assertAreEqual (101, abs(101));
 }");
-		}
+    }
 
-		[TestMethod]
-		public void VoidFunctionCalls ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void VoidFunctionCalls ()
+    {
+        var i = Run (@"
 int output = 0;
 void print (int v) {
 	output += v;
@@ -163,12 +163,12 @@ void main () {
 	print (3);
 	assertAreEqual (6, output);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void FunctionCallsWithValues ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void FunctionCallsWithValues ()
+    {
+        var i = Run (@"
 int mulMulDiv (long m1, long m2, long d) {
 	return (m1 * m2) / d;
 }
@@ -176,13 +176,13 @@ int mulMulDiv (long m1, long m2, long d) {
 void main () {
 	assertAreEqual (66, mulMulDiv (2, 100, 3));
 }");
-		}
+    }
 
 
-		[TestMethod]
-		public void ForLoop ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void ForLoop ()
+    {
+        var i = Run (@"
 void main () {
 	int acc;
 	int i;
@@ -191,12 +191,12 @@ void main () {
 	}
 	assertAreEqual (11, acc);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void ForLoopWithBreak ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void ForLoopWithBreak ()
+    {
+        var i = Run (@"
 void main () {
 	int i;
 	for (i = 0; i <= 10; i++) {
@@ -205,34 +205,34 @@ void main () {
 	}
 	assertAreEqual (5, i);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void AintNoLoopForBreak ()
-		{
-			Assert.ThrowsException<AssertFailedException> (() => {
-				Run (@"
+    [TestMethod]
+    public void AintNoLoopForBreak ()
+    {
+        Assert.ThrowsException<AssertFailedException> (() => {
+            Run (@"
 void main () {
     break;
 }");
-			});
-		}
+        });
+    }
 
-		[TestMethod]
-		public void AintNoLoopForContinue ()
-		{
-			Assert.ThrowsException<AssertFailedException> (() => {
-				Run (@"
+    [TestMethod]
+    public void AintNoLoopForContinue ()
+    {
+        Assert.ThrowsException<AssertFailedException> (() => {
+            Run (@"
 void main () {
     continue;
 }");
-			});
-		}
+        });
+    }
 
-		[TestMethod]
-		public void ForLoopWithContinue ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void ForLoopWithContinue ()
+    {
+        var i = Run (@"
 void main () {
     int otherI = 0;
 	int i;
@@ -244,12 +244,12 @@ void main () {
 	}
 	assertAreEqual (5, otherI);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void WhileLoopWithBreak ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void WhileLoopWithBreak ()
+    {
+        var i = Run (@"
 void main () {
 	int i = 0;
     while (i < 10) {
@@ -259,12 +259,12 @@ void main () {
     }
 	assertAreEqual (5, i);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void WhileLoopWithContinue ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void WhileLoopWithContinue ()
+    {
+        var i = Run (@"
 void main () {
 	int i = 0;
     int c = 0;
@@ -276,12 +276,12 @@ void main () {
     }
 	assertAreEqual (5, c);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void DoWhileOnce ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void DoWhileOnce ()
+    {
+        var i = Run (@"
 void main () {
 	int i = 0;
     do {
@@ -289,12 +289,12 @@ void main () {
     } while (i > 1000);
 	assertAreEqual (1, i);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void DoWhileLoopWithBreak ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void DoWhileLoopWithBreak ()
+    {
+        var i = Run (@"
 void main () {
 	int i = 0;
     do {
@@ -304,12 +304,12 @@ void main () {
     } while (i < 10);
 	assertAreEqual (5, i);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void DoWhileLoopWithContinue ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void DoWhileLoopWithContinue ()
+    {
+        var i = Run (@"
 void main () {
 	int i = 0;
     int c = 0;
@@ -322,52 +322,52 @@ void main () {
 	assertAreEqual (5, c);
     assertAreEqual (10, i);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void SizeofInt ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void SizeofInt ()
+    {
+        var i = Run (@"
 void main () {
 	int s = sizeof(int);
 	assertAreEqual (1, s);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void SizeofSizeofInt ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void SizeofSizeofInt ()
+    {
+        var i = Run (@"
 void main () {
 	int s = sizeof(sizeof(int));
 	assertAreEqual (1, s);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void SizeofIntPtr ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void SizeofIntPtr ()
+    {
+        var i = Run (@"
 void main () {
 	int s = sizeof(int*);
 	assertAreEqual (1, s);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void SizeofLongInt ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void SizeofLongInt ()
+    {
+        var i = Run (@"
 void main () {
 	int s = sizeof(long int);
 	assertAreEqual (1, s);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void SizeofArray ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void SizeofArray ()
+    {
+        var i = Run (@"
 int array[] = { 0, 1, 2, 3, 4 };
 void main () {
 	int sa = sizeof(array);
@@ -377,12 +377,12 @@ void main () {
 	assertAreEqual (5, num);
     assertAreEqual (5, num2);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void InternalFunctionMemcmpWorks ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void InternalFunctionMemcmpWorks ()
+    {
+        var i = Run (@"
 int memcmp (const void *s1, const void *s2, int n);
 int ones[5] = { 1, 1, 1, 1, 1 };
 int ones2[5] = { 1, 1, 1, 1, 1 };
@@ -396,36 +396,36 @@ void main () {
 	assertAreEqual (-1, memcmp(ones, twos, sizeof(ones)));
 	assertAreEqual (1, memcmp(twos, ones, sizeof(ones)));
 }");
-		}
+    }
 
-		[TestMethod]
-		public void LocalVariableInitialization ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void LocalVariableInitialization ()
+    {
+        var i = Run (@"
 void main () {
 	int a = 4;
 	int b = 8;
 	int c = a + b;
 	assertAreEqual (12, c);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void GlobalVariableInitialization ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void GlobalVariableInitialization ()
+    {
+        var i = Run (@"
 int a = 4;
 int b = 8;
 int c = a + b;
 void main () {
     assertAreEqual (12, c);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void AddressOfLocal ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void AddressOfLocal ()
+    {
+        var i = Run (@"
 void main () {
     int a = 4;
     int *pa = &a;
@@ -433,12 +433,12 @@ void main () {
     a = *pa + 1;
     assertAreEqual (5, *pa);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void AddressOfGlobal ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void AddressOfGlobal ()
+    {
+        var i = Run (@"
 int a = 0;
 void main () {
     int *pa = &a;
@@ -446,54 +446,54 @@ void main () {
     a = *pa + 1;
     assertAreEqual (1, *pa);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void PreDecrement ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void PreDecrement ()
+    {
+        var i = Run (@"
 void main () {
     int a = 100;
     assertAreEqual (99, --a);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void PreIncrement ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void PreIncrement ()
+    {
+        var i = Run (@"
 void main () {
     int a = 100;
     assertAreEqual (101, ++a);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void PostDecrement ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void PostDecrement ()
+    {
+        var i = Run (@"
 void main () {
     int a = 100;
     assertAreEqual (100, a--);
     assertAreEqual (99, a);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void PostIncrement ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void PostIncrement ()
+    {
+        var i = Run (@"
 void main () {
     int a = 100;
     assertAreEqual (100, a++);
     assertAreEqual (101, a);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void PostIncrementPointer ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void PostIncrementPointer ()
+    {
+        var i = Run (@"
 int a[] = { 10, 11, 12 };
 void main () {
     int* p = a;
@@ -501,12 +501,12 @@ void main () {
     assertAreEqual (11, *p++);
     assertAreEqual (12, *p++);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void PostDecrementPointer ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void PostDecrementPointer ()
+    {
+        var i = Run (@"
 int a[] = { 10, 11, 12 };
 void main () {
     int* p = a + 2;
@@ -514,12 +514,12 @@ void main () {
     assertAreEqual (11, *p--);
     assertAreEqual (10, *p--);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void BoolAssignment ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void BoolAssignment ()
+    {
+        var i = Run (@"
 void main () {
     bool a = false;
     assertAreEqual (false, a);
@@ -528,12 +528,12 @@ void main () {
     assertAreEqual (true, a);
     assertAreEqual ((bool)1, a);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void BoolLoopEnd ()
-		{
-			var i = Run (@"
+    [TestMethod]
+    public void BoolLoopEnd ()
+    {
+        var i = Run (@"
 void main () {
     int i = 0;
     bool b = true;
@@ -544,12 +544,12 @@ void main () {
     assertAreEqual (false, b);
     assertAreEqual (10, i);
 }");
-		}
+    }
 
-		[TestMethod]
-		public void ArrayElementAssignment ()
-		{
-			Run (@"
+    [TestMethod]
+    public void ArrayElementAssignment ()
+    {
+        Run (@"
 int a[] = { 10, 11, 12, 13 };
 void main () {
 	assertAreEqual (10, a[0]);
@@ -560,12 +560,12 @@ void main () {
 	assertAreEqual (12000, a[2]);
 }
 ");
-		}
+    }
 
-		[TestMethod]
-		public void PointerAssignment ()
-		{
-			Run (@"
+    [TestMethod]
+    public void PointerAssignment ()
+    {
+        Run (@"
 int a[] = { 10, 11, 12, 13 };
 void assign(int *p) { *p = 42; }
 void main () {
@@ -587,12 +587,12 @@ void main () {
 	assertAreEqual (42, c);
 }
 ");
-		}
+    }
 
-		[TestMethod]
-		public void VoidCallbackFunction ()
-		{
-			Run (@"
+    [TestMethod]
+    public void VoidCallbackFunction ()
+    {
+        Run (@"
 int result = 0;
 void callback(int x) {
 	result = 10 * x;
@@ -605,12 +605,12 @@ void main () {
 	assertAreEqual(120, result);
 }
 ");
-		}
+    }
 
-		[TestMethod]
-		public void IntCallbackFunction ()
-		{
-			Run (@"
+    [TestMethod]
+    public void IntCallbackFunction ()
+    {
+        Run (@"
 int callback(int x) {
 	return 10 * x;
 }
@@ -622,7 +622,6 @@ void main () {
 	assertAreEqual(1230, result);
 }
 ");
-		}
-	}
+    }
 }
 

@@ -1,19 +1,14 @@
-﻿using System;
-using System.Linq;
-using CLanguage.Interpreter;
-using CLanguage.Syntax;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static CLanguage.CLanguageService;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CLanguage.Tests
+namespace CLanguage.Tests;
+
+[TestClass]
+public class ClassTests : TestsBase
 {
-    [TestClass]
-    public class ClassTests : TestsBase
+    [TestMethod]
+    public void EmptyClass ()
     {
-        [TestMethod]
-        public void EmptyClass ()
-        {
-            Run (@"
+        Run (@"
 class C {
 };
 C c;
@@ -22,12 +17,12 @@ void main() {
     assertAreEqual(0, sizeof(C));
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void TypdefClass ()
-        {
-            Run (@"
+    [TestMethod]
+    public void TypdefClass ()
+    {
+        Run (@"
 typedef class C {
     int x;
 } OtherC;
@@ -37,12 +32,12 @@ void main() {
     assertAreEqual(1, sizeof(OtherC));
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void Visibility ()
-        {
-            Run (@"
+    [TestMethod]
+    public void Visibility ()
+    {
+        Run (@"
 class C {
     int x;
 public:
@@ -53,12 +48,12 @@ void main() {
     int z = c.y;
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void FieldReadAndWrite ()
-        {
-            Run (@"
+    [TestMethod]
+    public void FieldReadAndWrite ()
+    {
+        Run (@"
 class C {
 public:
     int x;
@@ -74,12 +69,12 @@ void main() {
     assertAreEqual(6042, z);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void LocalFieldReadAndWrite ()
-        {
-            Run (@"
+    [TestMethod]
+    public void LocalFieldReadAndWrite ()
+    {
+        Run (@"
 class C {
 public:
     int x;
@@ -95,12 +90,12 @@ void main() {
     assertAreEqual(6042, z);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void GlobalConstructor ()
-        {
-            Run (@"
+    [TestMethod]
+    public void GlobalConstructor ()
+    {
+        Run (@"
 class C {
 public:
     int x;
@@ -112,12 +107,12 @@ void main() {
     assertAreEqual(42, c.x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void LocalConstructor ()
-        {
-            Run (@"
+    [TestMethod]
+    public void LocalConstructor ()
+    {
+        Run (@"
 class C {
 public:
     int x;
@@ -131,12 +126,12 @@ void main() {
     assertAreEqual(-1, c2.x);
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void LocalDestructor ()
-        {
-            Run (@"
+    [TestMethod]
+    public void LocalDestructor ()
+    {
+        Run (@"
 class C {
     int x;
 public:
@@ -147,12 +142,12 @@ void main() {
     C c;
 }
 ");
-        }
+    }
 
-        [TestMethod, Ignore]
-        public void InlineMethodDefinitions ()
-        {
-            Run (@"
+    [TestMethod, Ignore]
+    public void InlineMethodDefinitions ()
+    {
+        Run (@"
 class C {
     int x;
 public:
@@ -165,12 +160,12 @@ void main() {
     assertAreEqual(101, c.getX());
 }
 ");
-        }
+    }
 
-        [TestMethod]
-        public void ParseExternalMethodDeclarations ()
-        {
-            Parse (@"
+    [TestMethod]
+    public void ParseExternalMethodDeclarations ()
+    {
+        Parse (@"
 class C {
     int x;
 public:
@@ -178,12 +173,12 @@ public:
     int getX();
 };
 ");
-        }
+    }
 
-        [TestMethod, Ignore]
-        public void ExternalMethodDefinitions ()
-        {
-            Run (@"
+    [TestMethod, Ignore]
+    public void ExternalMethodDefinitions ()
+    {
+        Run (@"
 class C {
     int x;
 public:
@@ -198,6 +193,5 @@ void main() {
     assertAreEqual(101, c.getX());
 }
 ");
-        }
     }
 }

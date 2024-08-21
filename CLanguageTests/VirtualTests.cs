@@ -1,15 +1,14 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CLanguage.Tests
+namespace CLanguage.Tests;
+
+[TestClass]
+public class VirtualTests : TestsBase
 {
-    [TestClass]
-    public class VirtualTests : TestsBase
+    [TestMethod, Ignore]
+    public void BaseWithVirtualFunction ()
     {
-        [TestMethod, Ignore]
-        public void BaseWithVirtualFunction ()
-        {
-            Run (@"
+        Run (@"
 class B {
     virtual int f() { return 42; }
 }
@@ -20,6 +19,5 @@ void main()
     assertAreEqual(43, b.f());
 }
 ");
-        }
     }
 }
