@@ -20,7 +20,7 @@ public class CVoidType : CType
 
     public override string ToString () => "void";
 
-    public override bool Equals (object obj) => obj is CVoidType;
+    public override bool Equals (object? obj) => obj is CVoidType;
 
     public override int GetHashCode ()
     {

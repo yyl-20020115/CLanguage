@@ -17,7 +17,7 @@ public class CPointerType : CType
 
     public override string ToString () => $"{InnerType}*";
 
-    public override bool Equals (object obj) => obj is CPointerType o && InnerType.Equals (o.InnerType);
+    public override bool Equals (object? obj) => obj is CPointerType o && InnerType.Equals (o.InnerType);
 
     public override int GetHashCode ()
     {

@@ -13,7 +13,7 @@ public class ExpressionInitializer : Initializer
 
     public ExpressionInitializer (Expression expr) => Expression = expr;
 
-    public override string ToString () => Expression.ToString ();
+    public override string? ToString () => Expression.ToString ();
 }
 
 public class StructuredInitializer : Initializer

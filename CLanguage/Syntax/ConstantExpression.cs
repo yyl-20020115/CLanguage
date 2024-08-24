@@ -76,7 +76,7 @@ public class ConstantExpression : Expression
         ec.Emit (OpCode.LoadConstant, cval);
     }
 
-    public override string ToString () => Value.ToString ();
+    public override string? ToString () => Value.ToString();
 
     public override Value EvalConstant (EmitContext ec)
     {

@@ -115,13 +115,13 @@ public class Preprocessor (Preprocessor.Include include, Report report, params T
                             if (body.Count >= 2 && body[0].Kind == '(' && body[0].Location.Index == nameToken.EndLocation.Index) {
                                 var endParam = body.FindIndex (1, x => x.Kind == ')');
                                 if (endParam >= 0 && endParam + 1 < body.Count) {
-                                    ps = body.Take (endParam).Where (x => x.Kind == TokenKind.IDENTIFIER).Select (x => x.StringValue).ToArray ();
+                                    ps = body.Take (endParam).Where (x => x.Kind == TokenKind.IDENTIFIER).Select (x => x.StringValue).ToArray ()!;
                                     body.RemoveRange (0, endParam + 1);
                                     hasPs = true;
                                 }
                             }
                             var define = new Define (
-                                name: nameToken.StringValue,
+                                name: nameToken.StringValue!,
                                 hasParameters: hasPs,
                                 parameters: ps,
                                 body: body.ToArray ()

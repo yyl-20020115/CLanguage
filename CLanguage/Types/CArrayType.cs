@@ -30,7 +30,7 @@ public class CArrayType (CType elementType, int? length) : CType
             ? 1000
             : otherType is CPointerType pt ? ElementType.Equals (pt.InnerType) ? 900 : ElementType.ScoreCastTo (pt.InnerType) / 2 : 0;
 
-    public override bool Equals (object obj) =>obj is CArrayType a && Length == a.Length && ElementType.Equals (a.ElementType);
+    public override bool Equals (object? obj) =>obj is CArrayType a && Length == a.Length && ElementType.Equals (a.ElementType);
 
     public override int GetHashCode ()
     {

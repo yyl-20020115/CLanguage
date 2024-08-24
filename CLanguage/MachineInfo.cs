@@ -143,9 +143,9 @@ public class MachineInfo
         }
     }
 
-    static readonly MethodInfo miReadArg = typeof (CInterpreter).GetTypeInfo ().GetDeclaredMethod (nameof (CInterpreter.ReadArg));
-    static readonly MethodInfo miPush = typeof (CInterpreter).GetTypeInfo ().GetDeclaredMethod (nameof (CInterpreter.Push));
-    static readonly MethodInfo miReadString = typeof (CInterpreter).GetTypeInfo ().GetDeclaredMethod (nameof (CInterpreter.ReadString));
+    static readonly MethodInfo? miReadArg = typeof (CInterpreter).GetTypeInfo ().GetDeclaredMethod (nameof (CInterpreter.ReadArg));
+    static readonly MethodInfo? miPush = typeof (CInterpreter).GetTypeInfo ().GetDeclaredMethod (nameof (CInterpreter.Push));
+    static readonly MethodInfo? miReadString = typeof (CInterpreter).GetTypeInfo ().GetDeclaredMethod (nameof (CInterpreter.ReadString));
 
     static readonly Expression[] noExprs = [];
 
@@ -160,17 +160,17 @@ public class MachineInfo
         var argsE = ps.Length > 0 ? new Expression[nargs] : noExprs;
         for (var i = 0; i < nargs; i++) {
             var pt = ps[i].ParameterType;
-            var vargE = Expression.Call (interpreterE, miReadArg, Expression.Constant (i));
+            var vargE = Expression.Call (interpreterE, miReadArg!, Expression.Constant (i));
             argsE[i] = Expression.Field (vargE, ValueReflection.TypedFields[pt]);
             if (pt == typeof (string)) {
-                argsE[i] = Expression.Call (interpreterE, miReadString, argsE[i]);
+                argsE[i] = Expression.Call (interpreterE, miReadString!, argsE[i]);
             }
         }
         var resultE = Expression.Call (targetE, method, argsE);
         var bodyE = resultE;
         if (method.ReturnType != typeof (void)) {
             var valueResultE = Expression.Call (ValueReflection.CreateValueFromTypeMethods[method.ReturnType], resultE);
-            bodyE = Expression.Call (interpreterE, miPush, valueResultE);
+            bodyE = Expression.Call (interpreterE, miPush!, valueResultE);
         }
         var ee = Expression.Lambda<InternalFunctionAction> (bodyE, interpreterE);
         return ee.Compile ();
@@ -193,11 +193,11 @@ public class MachineInfo
             : type == typeof (char)
             ? "char"
             : type == typeof (uint)
-            ? IntSize == 4 ? "unsigned int" 
+            ? IntSize == 4 ? "unsigned int"
             : "unsigned long"
-            : type == typeof (ushort) 
+            : type == typeof (ushort)
             ? "unsigned short"
-            : type == typeof (sbyte) 
+            : type == typeof (sbyte)
             ? "signed char"
             : null
         ;

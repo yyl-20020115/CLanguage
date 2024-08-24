@@ -38,7 +38,7 @@ public class CFunctionType : CType
             throw new ArgumentNullException (nameof (declaringType));
     }
 
-    public override bool Equals (object obj) => obj is CFunctionType o && ReturnType.Equals (o.ReturnType) && ParameterTypesEqual (o);
+    public override bool Equals (object? obj) => obj is CFunctionType o && ReturnType.Equals (o.ReturnType) && ParameterTypesEqual (o);
 
     public override int GetHashCode ()
     {

@@ -8,7 +8,7 @@ public abstract class CBasicType (string name, Signedness signedness, string siz
     public Signedness Signedness { get; private set; } = signedness;
     public string Size { get; private set; } = size;
 
-    public override bool Equals (object obj) 
+    public override bool Equals (object? obj) 
         => obj is CBasicType o && (Name == o.Name) && (Signedness == o.Signedness) && (Size == o.Size);
 
     public override int GetHashCode()

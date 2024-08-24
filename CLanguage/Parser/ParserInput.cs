@@ -22,7 +22,7 @@ public class ParserInput (Token[] tokens) : yyParser.yyInput
 
     public object value () => CurrentToken.Value ?? "";
 
-    public Token CurrentToken => Tokens[index].Kind == TokenKind.IDENTIFIER && typedefs.Contains(Tokens[index].StringValue) ?
+    public Token CurrentToken => Tokens[index].Kind == TokenKind.IDENTIFIER && typedefs.Contains(Tokens[index].StringValue!) ?
         Tokens[index].AsKind (TokenKind.TYPE_NAME) :
         Tokens[index];
 

@@ -132,5 +132,5 @@ static class ValueReflection
 
     static ValueReflection () 
         => TypedFields[typeof (string)] 
-        = typeof (Value).GetTypeInfo ().GetDeclaredField (nameof (Value.PointerValue));
+        = typeof (Value).GetTypeInfo ().GetDeclaredField (nameof (Value.PointerValue))!;
 }

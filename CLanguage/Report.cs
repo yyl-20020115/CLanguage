@@ -86,8 +86,8 @@ public class Report (Report.Printer? printer = null)
         protected AbstractMessage ()
         {
         }
-
-        public override bool Equals (object obj) => (obj is AbstractMessage o) &&
+        
+        public override bool Equals (object? obj) => (obj is AbstractMessage o) &&
                 (o.Code == Code) &&
                 (o.Location == Location) &&
                 (o.IsWarning == IsWarning) &&

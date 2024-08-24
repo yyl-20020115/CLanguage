@@ -10,7 +10,8 @@ public struct Token : IEquatable<Token>
     public readonly Location EndLocation;
     public readonly object? Value;
 
-    public readonly string StringValue => Value is string s ? s : (Value != null ? Convert.ToString (Value, System.Globalization.CultureInfo.InvariantCulture) : "");
+    public readonly string? StringValue => Value is string s 
+        ? s : (Value != null ? Convert.ToString (Value, System.Globalization.CultureInfo.InvariantCulture) : "");
 
     public Token (int kind, object? value, Location location, Location endLocation)
     {
@@ -47,7 +48,7 @@ public struct Token : IEquatable<Token>
 
     public readonly Token AsKind (int kind) => new(kind, Value, Location, EndLocation);
 
-    public override bool Equals (object obj) => obj is Token && Equals ((Token)obj);
+    public override bool Equals (object? obj) => obj is Token token && Equals (token);
 
     public bool Equals (Token other) => Kind == other.Kind &&
                Location.Equals (other.Location) &&
